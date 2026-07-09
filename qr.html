@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Générateur QR INQUISITIO</title>
+
+
+<style>
+
+body{
+
+background:#1b1425;
+
+color:white;
+
+font-family:Arial;
+
+text-align:center;
+
+padding:30px;
+
+}
+
+
+.carte{
+
+background:#241833;
+
+border:3px solid #d4af37;
+
+border-radius:20px;
+
+padding:30px;
+
+}
+
+
+button{
+
+padding:15px;
+
+background:#d4af37;
+
+border:0;
+
+border-radius:10px;
+
+font-size:18px;
+
+}
+
+
+.qr{
+
+display:inline-block;
+
+background:white;
+
+color:black;
+
+padding:15px;
+
+margin:10px;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="carte">
+
+
+<h1>⚜️ Générateur QR INQUISITIO</h1>
+
+
+<button onclick="generer()">
+Créer les QR Codes
+</button>
+
+
+<div id="zone"></div>
+
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+<script src="data/personnages.js"></script>
+
+
+<script src="js/qr.js"></script>
+
+
+</body>
+
+
+</html>
