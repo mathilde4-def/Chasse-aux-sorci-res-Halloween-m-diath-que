@@ -19,11 +19,11 @@ const firebaseConfig = {
 
     apiKey: "AIzaSyAGkWiSUykzzGuz_PgcVTfVeFLkHB9Mj3",
 
-    authDomain: "inquisition-halloween.firebaseapp.com",
+    authDomain: "inquisitio-halloween.firebaseapp.com",
 
-    projectId: "inquisition-halloween",
+    projectId: "inquisitio-halloween",
 
-    storageBucket: "inquisition-halloween.firebasestorage.app",
+    storageBucket: "inquisitio-halloween.firebasestorage.app",
 
     messagingSenderId: "191062565005",
 
