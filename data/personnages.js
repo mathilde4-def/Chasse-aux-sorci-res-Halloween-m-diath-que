@@ -1,5 +1,5 @@
 // =====================================
-// INQUISITIO
+// INQUISITION
 // Personnages - Sorcières partie 1
 // =====================================
 
