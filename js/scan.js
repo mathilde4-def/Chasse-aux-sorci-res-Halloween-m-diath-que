@@ -1,7 +1,7 @@
 // ========================================
 // INQUISITIO
 // Gestion des scans QR
-// Pack 2
+// Pack 4
 // ========================================
 
 
@@ -12,7 +12,7 @@ import {
 
 
 
-// Récupération de l'équipe
+// Récupération équipe
 
 const nomEquipe =
 localStorage.getItem("equipe");
@@ -43,6 +43,14 @@ const affichageErreurs =
 document.getElementById("erreurs");
 
 
+const barre =
+document.getElementById("barreProgression");
+
+
+const zoneVictoire =
+document.getElementById("victoire");
+
+
 
 
 // Vérification équipe
@@ -55,7 +63,7 @@ if(!nomEquipe){
 
 
     message.textContent =
-    "Retournez à l'accueil pour créer votre équipe.";
+    "Retournez à l'accueil.";
 
 
     throw new Error(
@@ -66,9 +74,9 @@ if(!nomEquipe){
 
 
 
-
 affichageEquipe.textContent =
 nomEquipe;
+
 
 
 
@@ -92,7 +100,64 @@ personnages[idPersonnage];
 
 
 
-// Si QR inconnu
+
+
+function afficherStatistiques(equipe){
+
+
+    affichageScore.textContent =
+    equipe.score;
+
+
+
+    affichageSorcieres.textContent =
+    equipe.sorcieres;
+
+
+
+    affichageErreurs.textContent =
+    equipe.erreurs;
+
+
+
+    let progression =
+    (equipe.sorcieres / 40) * 100;
+
+
+
+    if(progression > 100){
+
+        progression = 100;
+
+    }
+
+
+
+    barre.style.width =
+    progression + "%";
+
+
+
+    if(equipe.sorcieres >= 40){
+
+
+        zoneVictoire.style.display =
+        "block";
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+// QR inconnu
 
 if(!personnage){
 
@@ -104,13 +169,12 @@ if(!personnage){
     message.textContent =
     "Cette personne n'existe pas dans les archives.";
 
-
 }
+
 
 else{
 
 
-    // Ajout de l'identifiant au personnage
     personnage.id =
     idPersonnage;
 
@@ -137,23 +201,12 @@ else{
     else{
 
 
-        // Mise à jour des compteurs actuels
-
-        affichageScore.textContent =
-        equipe.score;
-
-
-        affichageSorcieres.textContent =
-        equipe.sorcieres + " / 40";
-
-
-        affichageErreurs.textContent =
-        equipe.erreurs;
+        afficherStatistiques(equipe);
 
 
 
 
-        // Vérification double scan
+        // Déjà trouvé
 
         if(
             equipe.scans &&
@@ -166,7 +219,7 @@ else{
 
 
             message.textContent =
-            "Votre équipe a déjà identifié cette personne.";
+            "Votre équipe a déjà trouvé ce personnage.";
 
 
         }
@@ -175,8 +228,6 @@ else{
         else{
 
 
-            // Enregistrement Firebase
-
             await enregistrerScan(
                 nomEquipe,
                 personnage
@@ -184,52 +235,53 @@ else{
 
 
 
-            // Affichage résultat
-
             resultat.textContent =
             personnage.nom;
 
 
 
-            message.innerHTML =
-            personnage.message
-            +
-            "<br><br>"
-            +
-            (
-                personnage.points > 0
-                ?
-                "⭐ Vous gagnez "
-                :
-                "❌ Vous perdez "
-            )
-            +
-            Math.abs(personnage.points)
-            +
-            " point(s).";
+            if(personnage.points > 0){
+
+
+                message.innerHTML =
+                personnage.message
+                +
+                "<br><br>⭐ Vous gagnez "
+                +
+                personnage.points
+                +
+                " point.";
+
+            }
+
+            else{
+
+
+                message.innerHTML =
+                personnage.message
+                +
+                "<br><br>❌ Vous perdez "
+                +
+                Math.abs(personnage.points)
+                +
+                " point.";
+
+            }
 
 
 
 
-            // Mise à jour visuelle immédiate
+
+            // Rechargement des statistiques
 
             const nouvelleEquipe =
             await recupererEquipe(nomEquipe);
 
 
 
-            affichageScore.textContent =
-            nouvelleEquipe.score;
-
-
-            affichageSorcieres.textContent =
-            nouvelleEquipe.sorcieres
-            +
-            " / 40";
-
-
-            affichageErreurs.textContent =
-            nouvelleEquipe.erreurs;
+            afficherStatistiques(
+                nouvelleEquipe
+            );
 
 
         }
