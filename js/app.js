@@ -1,7 +1,8 @@
+```javascript
 // ========================================
 // INQUISITIO
 // Gestion de l'équipe
-// Version Firebase 1.0
+// Version Firebase 1.1
 // ========================================
 
 import { db } from "./firebase.js";
@@ -15,7 +16,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
 
-// Vérifie si une équipe existe déjà sur ce téléphone
+// Vérifie si une équipe existe déjà
 
 let ancienneEquipe = localStorage.getItem("equipeId");
 let ancienNom = localStorage.getItem("equipeNom");
@@ -27,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function(){
     if(ancienneEquipe && ancienNom){
 
         afficherCarte(ancienNom);
-
         return;
 
     }
@@ -55,8 +55,6 @@ document.addEventListener("DOMContentLoaded", function(){
         try {
 
 
-            // Vérifie si le nom existe déjà
-
             const equipes = query(
                 collection(db,"equipes"),
                 where("nom","==",nom)
@@ -66,12 +64,12 @@ document.addEventListener("DOMContentLoaded", function(){
             const resultat = await getDocs(equipes);
 
 
-            let equipe;
+            let equipeId;
 
 
             if(!resultat.empty){
 
-                equipe = resultat.docs[0].id;
+                equipeId = resultat.docs[0].id;
 
 
             } else {
@@ -87,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function(){
                 );
 
 
-                equipe = nouvelleEquipe.id;
+                equipeId = nouvelleEquipe.id;
 
             }
 
@@ -95,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
             localStorage.setItem(
                 "equipeId",
-                equipe
+                equipeId
             );
 
 
@@ -114,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
             console.error(erreur);
 
-            alert("Erreur de connexion au serveur.");
+            alert("Erreur de connexion Firebase.");
 
         }
 
@@ -135,53 +133,49 @@ document.body.innerHTML = `
 
 <div class="carte">
 
-
 <h1>⚜️ CARTE D'INQUISITEUR</h1>
-
 
 <h2>
 Ordre du Grand Tribunal
 </h2>
 
-
 <p>
 Nom de l'équipe :
 </p>
-
 
 <h2>
 ${nom}
 </h2>
 
-
 <hr>
-
 
 <h3>
 🧙 Sorcières trouvées : 0 / 40
 </h3>
 
-
 <h3>
 ⭐ Score : 0
 </h3>
 
-
 <br>
 
-
-<button onclick="commencerMission()">
+<button id="mission">
 Commencer la mission
 </button>
-
 
 </div>
 
 `;
 
 
-function commencerMission(){
+document
+.getElementById("mission")
+.addEventListener("click", function(){
 
     window.location.href = "scan.html?id=S01";
 
+});
+
+
 }
+```
