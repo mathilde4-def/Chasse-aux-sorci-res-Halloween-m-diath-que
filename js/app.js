@@ -1,155 +1,183 @@
 // ========================================
 // INQUISITIO
-// Gestion du joueur
-// Version 0.1
+// Gestion de l'équipe
+// Version Firebase 1.0
 // ========================================
 
-// Vérifie si un inquisiteur existe déjà
+import { db } from "./firebase.js";
 
-let ancienInquisiteur = localStorage.getItem("inquisiteur");
-
-
-if(ancienInquisiteur !== null){
-
-
-    document.addEventListener("DOMContentLoaded", function(){
-
-
-        document.body.innerHTML = `
-
-        <div class="carte">
-
-        <h1>⚜️ CARTE D'INQUISITEUR</h1>
-
-        <h2>
-        Ordre du Grand Tribunal
-        </h2>
+import {
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
 
-        <p>
-        Nom de l'inquisiteur :
-        </p>
+// Vérifie si une équipe existe déjà sur ce téléphone
+
+let ancienneEquipe = localStorage.getItem("equipeId");
+let ancienNom = localStorage.getItem("equipeNom");
 
 
-        <h2>
-        ${ancienInquisiteur}
-        </h2>
+document.addEventListener("DOMContentLoaded", function(){
 
 
-        <hr>
+    if(ancienneEquipe && ancienNom){
 
-
-        <h3>
-        🧙 Sorcières trouvées : 0 / 40
-        </h3>
-
-
-        <h3>
-        👩 Erreurs : 0
-        </h3>
-
-
-        <button>
-        Continuer la mission
-        </button>
-
-
-        </div>
-
-        `;
-
-
-    });
-
-
-}
-
-const bouton = document.querySelector("button");
-
-const champNom = document.querySelector("input");
-
-
-bouton.addEventListener("click", function(){
-
-
-    let nom = champNom.value.trim();
-
-
-    if(nom === ""){
-
-        alert("Veuillez entrer votre nom d'inquisiteur.");
+        afficherCarte(ancienNom);
 
         return;
 
     }
 
 
-    // Enregistrement du joueur sur le téléphone
-
-    localStorage.setItem(
-        "inquisiteur",
-        nom
-    );
+    const bouton = document.querySelector("button");
+    const champNom = document.querySelector("input");
 
 
-    // Passage à la carte d'inquisiteur
-
-    document.body.innerHTML = `
-
-    <div class="carte">
-
-        <h1>⚜️ CARTE D'INQUISITEUR</h1>
-
-        <h2>
-        Ordre du Grand Tribunal
-        </h2>
+    bouton.addEventListener("click", async function(){
 
 
-        <p>
-        Nom de l'inquisiteur :
-        </p>
+        let nom = champNom.value.trim();
 
 
-        <h2>
-        ${nom}
-        </h2>
+        if(nom === ""){
+
+            alert("Veuillez entrer un nom d'équipe.");
+
+            return;
+
+        }
 
 
-        <hr>
+        try {
 
 
-        <p>
-        Mission :
-        </p>
+            // Vérifie si le nom existe déjà
+
+            const equipes = query(
+                collection(db,"equipes"),
+                where("nom","==",nom)
+            );
 
 
-        <p>
-        Identifier les sorcières cachées
-        dans la médiathèque.
-        </p>
+            const resultat = await getDocs(equipes);
 
 
-        <h3>
-        🧙 Sorcières trouvées : 0 / 40
-        </h3>
+            let equipe;
 
 
-        <h3>
-        👩 Erreurs : 0
-        </h3>
+            if(!resultat.empty){
+
+                equipe = resultat.docs[0].id;
 
 
-        <br>
+            } else {
 
 
-        <button onclick="alert('La mission commencera bientôt !')">
-        Recevoir la mission
-        </button>
+                const nouvelleEquipe = await addDoc(
+                    collection(db,"equipes"),
+                    {
+                        nom: nom,
+                        score: 0,
+                        trouvailles: []
+                    }
+                );
 
 
-    </div>
+                equipe = nouvelleEquipe.id;
 
-    `;
+            }
+
+
+
+            localStorage.setItem(
+                "equipeId",
+                equipe
+            );
+
+
+            localStorage.setItem(
+                "equipeNom",
+                nom
+            );
+
+
+            afficherCarte(nom);
+
+
+        }
+
+        catch(erreur){
+
+            console.error(erreur);
+
+            alert("Erreur de connexion au serveur.");
+
+        }
+
+
+    });
 
 
 });
+
+
+
+
+
+function afficherCarte(nom){
+
+
+document.body.innerHTML = `
+
+<div class="carte">
+
+
+<h1>⚜️ CARTE D'INQUISITEUR</h1>
+
+
+<h2>
+Ordre du Grand Tribunal
+</h2>
+
+
+<p>
+Nom de l'équipe :
+</p>
+
+
+<h2>
+${nom}
+</h2>
+
+
+<hr>
+
+
+<h3>
+🧙 Sorcières trouvées : 0 / 40
+</h3>
+
+
+<h3>
+⭐ Score : 0
+</h3>
+
+
+<br>
+
+
+<button onclick="alert('La mission commence !')">
+Recevoir la mission
+</button>
+
+
+</div>
+
+`;
+
+
+}
