@@ -1,181 +1,164 @@
-```javascript
 // ========================================
 // INQUISITIO
-// Gestion de l'équipe
-// Version Firebase 1.1
+// Gestion de l'accueil
+// Pack 1
 // ========================================
 
-import { db } from "./firebase.js";
 
 import {
-    collection,
-    addDoc,
-    getDocs,
-    query,
-    where
-} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    equipeExiste,
+    creerEquipe,
+    recupererEquipe
+} from "./firestore.js";
 
 
-// Vérifie si une équipe existe déjà
 
-let ancienneEquipe = localStorage.getItem("equipeId");
-let ancienNom = localStorage.getItem("equipeNom");
+// Éléments de la page
+
+const champNom = document.getElementById("nomEquipe");
+
+const bouton = document.getElementById("btnCommencer");
+
+const zoneErreur = document.getElementById("erreur");
 
 
-document.addEventListener("DOMContentLoaded", function(){
 
 
-    if(ancienneEquipe && ancienNom){
+// Vérifie si une équipe est déjà enregistrée sur ce téléphone
 
-        afficherCarte(ancienNom);
+const ancienneEquipe = localStorage.getItem("equipe");
+
+
+
+if(ancienneEquipe !== null){
+
+
+    const equipe = await recupererEquipe(ancienneEquipe);
+
+
+    if(equipe){
+
+
+        window.location.href =
+        "scan.html";
+
+    }
+
+
+}
+
+
+
+
+// Création d'une équipe
+
+bouton.addEventListener(
+"click",
+async function(){
+
+
+
+    zoneErreur.textContent = "";
+
+
+
+    const nomEquipe =
+    champNom.value.trim();
+
+
+
+    if(nomEquipe === ""){
+
+
+        zoneErreur.textContent =
+        "Veuillez entrer un nom d'équipe.";
+
+
         return;
 
     }
 
 
-    const bouton = document.querySelector("button");
-    const champNom = document.querySelector("input");
 
 
-    bouton.addEventListener("click", async function(){
+    bouton.disabled = true;
+
+    bouton.textContent =
+    "Création en cours...";
 
 
-        let nom = champNom.value.trim();
 
 
-        if(nom === ""){
+    try{
 
-            alert("Veuillez entrer un nom d'équipe.");
+
+        const existe =
+        await equipeExiste(nomEquipe);
+
+
+
+
+        if(existe){
+
+
+            zoneErreur.textContent =
+            "Ce nom d'équipe existe déjà. Choisissez-en un autre.";
+
+
+            bouton.disabled = false;
+
+            bouton.textContent =
+            "Commencer la mission";
+
 
             return;
 
         }
 
 
-        try {
-
-
-            const equipes = query(
-                collection(db,"equipes"),
-                where("nom","==",nom)
-            );
-
-
-            const resultat = await getDocs(equipes);
-
-
-            let equipeId;
-
-
-            if(!resultat.empty){
-
-                equipeId = resultat.docs[0].id;
-
-
-            } else {
-
-
-                const nouvelleEquipe = await addDoc(
-                    collection(db,"equipes"),
-                    {
-                        nom: nom,
-                        score: 0,
-                        trouvailles: []
-                    }
-                );
-
-
-                equipeId = nouvelleEquipe.id;
-
-            }
 
 
 
-            localStorage.setItem(
-                "equipeId",
-                equipeId
-            );
+        await creerEquipe(nomEquipe);
 
 
-            localStorage.setItem(
-                "equipeNom",
-                nom
-            );
 
 
-            afficherCarte(nom);
+        localStorage.setItem(
+            "equipe",
+            nomEquipe
+        );
 
 
-        }
-
-        catch(erreur){
-
-            console.error(erreur);
-
-            alert("Erreur de connexion Firebase.");
-
-        }
 
 
-    });
+        window.location.href =
+        "scan.html";
+
+
+
+    }
+
+
+    catch(erreur){
+
+
+        console.error(erreur);
+
+
+        zoneErreur.textContent =
+        "Impossible de créer l'équipe. Vérifiez votre connexion.";
+
+
+
+        bouton.disabled = false;
+
+        bouton.textContent =
+        "Commencer la mission";
+
+
+    }
+
 
 
 });
-
-
-
-
-
-function afficherCarte(nom){
-
-
-document.body.innerHTML = `
-
-<div class="carte">
-
-<h1>⚜️ CARTE D'INQUISITEUR</h1>
-
-<h2>
-Ordre du Grand Tribunal
-</h2>
-
-<p>
-Nom de l'équipe :
-</p>
-
-<h2>
-${nom}
-</h2>
-
-<hr>
-
-<h3>
-🧙 Sorcières trouvées : 0 / 40
-</h3>
-
-<h3>
-⭐ Score : 0
-</h3>
-
-<br>
-
-<button id="mission">
-Commencer la mission
-</button>
-
-</div>
-
-`;
-
-
-document
-.getElementById("mission")
-.addEventListener("click", function(){
-
-    window.location.href = "scan.html?id=S01";
-
-});
-
-
-}
-```
