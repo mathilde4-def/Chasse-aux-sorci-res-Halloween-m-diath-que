@@ -10,48 +10,8 @@
 <title>INQUISITIO - Scan</title>
 
 
-<style>
+<link rel="stylesheet" href="css/style.css">
 
-body{
-
-background:#1b1425;
-
-color:white;
-
-font-family:Arial;
-
-text-align:center;
-
-padding:40px;
-
-}
-
-
-.carte{
-
-background:#241833;
-
-border:3px solid #d4af37;
-
-border-radius:20px;
-
-padding:30px;
-
-max-width:600px;
-
-margin:auto;
-
-}
-
-
-h1{
-
-color:#d4af37;
-
-}
-
-
-</style>
 
 </head>
 
@@ -59,10 +19,71 @@ color:#d4af37;
 <body>
 
 
+<div class="conteneur">
+
+
 <div class="carte">
 
 
-<h1>⚜️ INQUISITIO</h1>
+<h1>⚜️ INQUISITIO ⚜️</h1>
+
+
+<h2>
+Chasse aux sorcières
+</h2>
+
+
+
+<hr>
+
+
+
+<h3>
+Équipe :
+</h3>
+
+
+<p id="equipe">
+Chargement...
+</p>
+
+
+
+<h3>
+⭐ Score :
+</h3>
+
+
+<p id="score">
+0
+</p>
+
+
+
+<h3>
+🧙 Sorcières trouvées :
+</h3>
+
+
+<p id="sorcieres">
+0 / 40
+</p>
+
+
+
+<h3>
+👩 Erreurs :
+</h3>
+
+
+<p id="erreurs">
+0
+</p>
+
+
+
+<hr>
+
 
 
 <h2 id="resultat">
@@ -71,20 +92,25 @@ Analyse du parchemin...
 
 
 <p id="message">
-
 Veuillez patienter.
-
 </p>
+
 
 
 </div>
 
+
+</div>
+
+
+
 <script src="data/personnages.js"></script>
 
-<script src="js/scan.js"></script>
+
+<script type="module" src="js/scan.js"></script>
+
 
 
 </body>
-
 
 </html>
