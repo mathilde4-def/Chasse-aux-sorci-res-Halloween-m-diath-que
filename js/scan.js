@@ -1,103 +1,241 @@
-// =====================================
+// ========================================
 // INQUISITIO
-// Gestion des scans
-// Version 0.2
-// =====================================
+// Gestion des scans QR
+// Pack 2
+// ========================================
 
 
-const parametres = new URLSearchParams(
-    window.location.search
-);
-
-
-const idPersonnage = parametres.get("id");
-
-
-
-const personnage = personnages[idPersonnage];
-
-
-const resultat = document.getElementById("resultat");
-
-const message = document.getElementById("message");
+import {
+    recupererEquipe,
+    enregistrerScan
+} from "./firestore.js";
 
 
 
-let trouvailles = JSON.parse(
-    localStorage.getItem("trouvailles")
-)
-|| [];
+// Récupération de l'équipe
+
+const nomEquipe =
+localStorage.getItem("equipe");
+
+
+
+const resultat =
+document.getElementById("resultat");
+
+
+const message =
+document.getElementById("message");
+
+
+const affichageEquipe =
+document.getElementById("equipe");
+
+
+const affichageScore =
+document.getElementById("score");
+
+
+const affichageSorcieres =
+document.getElementById("sorcieres");
+
+
+const affichageErreurs =
+document.getElementById("erreurs");
 
 
 
 
+// Vérification équipe
 
-if(personnage){
-
-
-    // Vérifie si déjà trouvé
-
-    if(trouvailles.includes(idPersonnage)){
+if(!nomEquipe){
 
 
-        resultat.innerHTML =
-        "⚠️ Déjà découvert";
+    resultat.textContent =
+    "⚠️ Aucune équipe";
 
 
-        message.innerHTML =
-        "Ce personnage a déjà été identifié par votre équipe.";
+    message.textContent =
+    "Retournez à l'accueil pour créer votre équipe.";
 
 
-    }
-
-
-    else{
-
-
-        // Ajout de la découverte
-
-        trouvailles.push(idPersonnage);
-
-
-        localStorage.setItem(
-            "trouvailles",
-            JSON.stringify(trouvailles)
-        );
-
-
-
-        resultat.innerHTML =
-        "🧙 " + personnage.nom;
-
-
-
-        message.innerHTML =
-        personnage.message
-        +
-        "<br><br>"
-        +
-        "⭐ Vous gagnez "
-        +
-        personnage.points
-        +
-        " point !";
-
-
-    }
-
+    throw new Error(
+        "Equipe absente"
+    );
 
 }
 
 
 
-else{
+
+affichageEquipe.textContent =
+nomEquipe;
 
 
-    resultat.innerHTML =
+
+
+// Récupération du QR Code
+
+const parametres =
+new URLSearchParams(
+    window.location.search
+);
+
+
+const idPersonnage =
+parametres.get("id");
+
+
+
+const personnage =
+personnages[idPersonnage];
+
+
+
+
+// Si QR inconnu
+
+if(!personnage){
+
+
+    resultat.textContent =
     "⚠️ Parchemin inconnu";
 
 
-    message.innerHTML =
+    message.textContent =
     "Cette personne n'existe pas dans les archives.";
+
+
+}
+
+else{
+
+
+    // Ajout de l'identifiant au personnage
+    personnage.id =
+    idPersonnage;
+
+
+
+    const equipe =
+    await recupererEquipe(nomEquipe);
+
+
+
+    if(!equipe){
+
+
+        resultat.textContent =
+        "⚠️ Equipe introuvable";
+
+
+        message.textContent =
+        "Impossible de retrouver votre équipe.";
+
+
+    }
+
+    else{
+
+
+        // Mise à jour des compteurs actuels
+
+        affichageScore.textContent =
+        equipe.score;
+
+
+        affichageSorcieres.textContent =
+        equipe.sorcieres + " / 40";
+
+
+        affichageErreurs.textContent =
+        equipe.erreurs;
+
+
+
+
+        // Vérification double scan
+
+        if(
+            equipe.scans &&
+            equipe.scans.includes(idPersonnage)
+        ){
+
+
+            resultat.textContent =
+            "⚠️ Déjà découvert";
+
+
+            message.textContent =
+            "Votre équipe a déjà identifié cette personne.";
+
+
+        }
+
+
+        else{
+
+
+            // Enregistrement Firebase
+
+            await enregistrerScan(
+                nomEquipe,
+                personnage
+            );
+
+
+
+            // Affichage résultat
+
+            resultat.textContent =
+            personnage.nom;
+
+
+
+            message.innerHTML =
+            personnage.message
+            +
+            "<br><br>"
+            +
+            (
+                personnage.points > 0
+                ?
+                "⭐ Vous gagnez "
+                :
+                "❌ Vous perdez "
+            )
+            +
+            Math.abs(personnage.points)
+            +
+            " point(s).";
+
+
+
+
+            // Mise à jour visuelle immédiate
+
+            const nouvelleEquipe =
+            await recupererEquipe(nomEquipe);
+
+
+
+            affichageScore.textContent =
+            nouvelleEquipe.score;
+
+
+            affichageSorcieres.textContent =
+            nouvelleEquipe.sorcieres
+            +
+            " / 40";
+
+
+            affichageErreurs.textContent =
+            nouvelleEquipe.erreurs;
+
+
+        }
+
+
+    }
+
 
 }
