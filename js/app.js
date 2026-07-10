@@ -170,8 +170,8 @@ ${nom}
 <br>
 
 
-<button onclick="alert('La mission commence !')">
-Recevoir la mission
+<button onclick="commencerMission()">
+Commencer la mission
 </button>
 
 
@@ -179,5 +179,9 @@ Recevoir la mission
 
 `;
 
+
+function commencerMission(){
+
+    window.location.href = "scan.html?id=S01";
 
 }
