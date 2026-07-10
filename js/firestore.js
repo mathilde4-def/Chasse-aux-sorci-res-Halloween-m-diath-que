@@ -1,7 +1,7 @@
 // ========================================
 // INQUISITIO
 // Gestion Firestore
-// Pack 1
+// Pack 2
 // ========================================
 
 
@@ -13,7 +13,10 @@ import {
     query,
     where,
     getDocs,
-    serverTimestamp
+    serverTimestamp,
+    updateDoc,
+    arrayUnion,
+    increment
 } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
 
@@ -21,7 +24,7 @@ import { db } from "./firebase.js";
 
 
 
-// Vérifie si un nom d'équipe existe déjà
+// Vérifie si un nom d'équipe existe
 
 export async function equipeExiste(nomEquipe){
 
@@ -44,7 +47,7 @@ export async function equipeExiste(nomEquipe){
 
 
 
-// Crée une nouvelle équipe
+// Création d'une équipe
 
 export async function creerEquipe(nomEquipe){
 
@@ -75,26 +78,21 @@ export async function creerEquipe(nomEquipe){
         }
     );
 
-
-    return true;
-
 }
 
 
 
-// Récupère une équipe existante
+// Récupérer une équipe
 
 export async function recupererEquipe(nomEquipe){
 
 
-    const equipeRef = doc(
-        db,
-        "equipes",
-        nomEquipe
-    );
+    const equipeRef =
+    doc(db,"equipes",nomEquipe);
 
 
-    const resultat = await getDoc(equipeRef);
+    const resultat =
+    await getDoc(equipeRef);
 
 
 
@@ -106,5 +104,65 @@ export async function recupererEquipe(nomEquipe){
 
 
     return null;
+
+}
+
+
+
+
+// Enregistrer un nouveau scan
+
+export async function enregistrerScan(
+    nomEquipe,
+    personnage
+){
+
+
+    const equipeRef =
+    doc(db,"equipes",nomEquipe);
+
+
+
+    const points =
+    personnage.points;
+
+
+
+    let modification = {
+
+        scans: arrayUnion(personnage.id),
+
+        score: increment(points)
+
+    };
+
+
+
+
+    if(personnage.type === "sorciere"){
+
+
+        modification.sorcieres =
+        increment(1);
+
+    }
+
+
+    else{
+
+
+        modification.erreurs =
+        increment(1);
+
+    }
+
+
+
+
+    await updateDoc(
+        equipeRef,
+        modification
+    );
+
 
 }
