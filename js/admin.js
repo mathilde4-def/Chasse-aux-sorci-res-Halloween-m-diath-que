@@ -1,7 +1,7 @@
 // ========================================
 // INQUISITIO
-// Administration
-// Pack 3
+// Administration sécurisée
+// Pack 4
 // ========================================
 
 
@@ -15,6 +15,43 @@ import {
 
 import { db } from "./firebase.js";
 
+
+
+// ================================
+// Mot de passe administrateur
+// ================================
+
+const MOT_DE_PASSE_ADMIN = "0404";
+
+
+
+
+// ================================
+// Éléments HTML
+// ================================
+
+const connexionAdmin =
+document.getElementById("connexionAdmin");
+
+
+const zoneAdministration =
+document.getElementById("zoneAdministration");
+
+
+const boutonConnexion =
+document.getElementById("connexion");
+
+
+const champMotDePasse =
+document.getElementById("motDePasse");
+
+
+const erreurConnexion =
+document.getElementById("erreurConnexion");
+
+
+const boutonDeconnexion =
+document.getElementById("deconnexion");
 
 
 const zoneEquipes =
@@ -31,8 +68,121 @@ document.getElementById("messageAdmin");
 
 
 
+// ================================
+// Vérification session
+// ================================
 
+if(
+    sessionStorage.getItem("adminConnecte")
+    ===
+    "oui"
+){
+
+    ouvrirAdministration();
+
+}
+
+
+
+
+// ================================
+// Connexion
+// ================================
+
+boutonConnexion.addEventListener(
+"click",
+function(){
+
+
+    const motDePasse =
+    champMotDePasse.value;
+
+
+
+    if(
+        motDePasse === MOT_DE_PASSE_ADMIN
+    ){
+
+
+        sessionStorage.setItem(
+            "adminConnecte",
+            "oui"
+        );
+
+
+        ouvrirAdministration();
+
+
+    }
+
+    else{
+
+
+        erreurConnexion.textContent =
+        "❌ Mot de passe incorrect.";
+
+
+    }
+
+
+});
+
+
+
+
+// ================================
+// Ouverture administration
+// ================================
+
+function ouvrirAdministration(){
+
+
+    connexionAdmin.style.display =
+    "none";
+
+
+    zoneAdministration.style.display =
+    "block";
+
+
+    afficherEquipes();
+
+
+}
+
+
+
+
+
+
+// ================================
+// Déconnexion
+// ================================
+
+boutonDeconnexion.addEventListener(
+"click",
+function(){
+
+
+    sessionStorage.removeItem(
+        "adminConnecte"
+    );
+
+
+    window.location.reload();
+
+
+});
+
+
+
+
+
+
+
+// ================================
 // Affichage des équipes
+// ================================
 
 async function afficherEquipes(){
 
@@ -53,11 +203,7 @@ async function afficherEquipes(){
 
 
         zoneEquipes.innerHTML =
-        `
-        <p>
-        Aucune équipe enregistrée.
-        </p>
-        `;
+        "<p>Aucune équipe.</p>";
 
 
         return;
@@ -71,8 +217,6 @@ async function afficherEquipes(){
 
 
 
-
-
     resultat.forEach(
         (element)=>{
 
@@ -82,8 +226,7 @@ async function afficherEquipes(){
 
 
 
-            html +=
-            `
+            html += `
 
             <div class="carte-classement">
 
@@ -99,17 +242,18 @@ async function afficherEquipes(){
 
 
                 <p>
-                🧙 Sorcières : ${equipe.sorcieres} / 40
+                🧙 Sorcières :
+                ${equipe.sorcieres} / 40
                 </p>
 
 
                 <p>
-                👩 Erreurs : ${equipe.erreurs}
+                👩 Erreurs :
+                ${equipe.erreurs}
                 </p>
 
 
-                <button
-                onclick="supprimerEquipe('${element.id}')">
+                <button onclick="supprimerEquipe('${element.id}')">
 
                 ❌ Supprimer
 
@@ -136,7 +280,10 @@ async function afficherEquipes(){
 
 
 
-// Suppression d'une équipe
+
+// ================================
+// Suppression équipe
+// ================================
 
 window.supprimerEquipe =
 async function(id){
@@ -168,18 +315,24 @@ async function(id){
 
 
 
+// ================================
 // Nouvelle partie
+// ================================
 
 boutonNouvellePartie.addEventListener(
 "click",
 async function(){
 
 
+    const confirmation =
+    prompt(
+        "Tapez RESET pour supprimer toutes les équipes."
+    );
+
+
 
     if(
-        !confirm(
-            "ATTENTION : supprimer toutes les équipes ?"
-        )
+        confirmation !== "RESET"
     ){
 
         return;
@@ -197,10 +350,7 @@ async function(){
 
 
 
-
-    const suppressions =
-    [];
-
+    const suppressions = [];
 
 
 
@@ -226,7 +376,6 @@ async function(){
 
 
 
-
     await Promise.all(
         suppressions
     );
@@ -234,21 +383,10 @@ async function(){
 
 
     message.textContent =
-    "Nouvelle partie prête !";
-
+    "✅ Nouvelle partie prête.";
 
 
     afficherEquipes();
 
 
 });
-
-
-
-
-
-
-
-// Chargement initial
-
-afficherEquipes();
