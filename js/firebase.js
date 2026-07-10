@@ -5,12 +5,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "VOTRE_API_KEY",
-  authDomain: "VOTRE_AUTH_DOMAIN",
-  projectId: "VOTRE_PROJECT_ID",
-  storageBucket: "VOTRE_STORAGE_BUCKET",
-  messagingSenderId: "VOTRE_MESSAGING_SENDER_ID",
-  appId: "VOTRE_APP_ID"
+  apiKey: "AIzaSyAGkWiSUykzzGuz_PgcVTfVeFLkHB9Mj3Q",
+  authDomain: "inquisitio-halloween.firebaseapp.com",
+  projectId: "inquisitio-halloween",
+  storageBucket: "inquisitio-halloween.firebasestorage.app",
+  messagingSenderId: "191062565005",
+  appId: "1:191062565005:web:54b0eb60e2bf81d52282c4"
 };
 
 const app = initializeApp(firebaseConfig);
