@@ -331,7 +331,7 @@ message:"Kassandra serait la dernière sorcière recherchée."
 nom:"Marguerite la Boulangère",
 type:"villageoise",
 points:-1,
-message:"Erreur ! Marguerite ne préparait que du pain magique. Vous perdez 1 point."
+message:"Erreur ! Marguerite ne préparait que du pain. Vous perdez 1 point."
 },
 
 
@@ -368,10 +368,10 @@ message:"Roseline cousait des costumes d'Halloween. Accusation injustifiée ! -1
 
 
 "V06": {
-nom:"Émilienne la Bibliothécaire",
+nom:"Mathilde la Bibliothécaire",
 type:"villageoise",
 points:-1,
-message:"Émilienne gardait les livres, pas les grimoires maléfiques. -1 point."
+message:"Mathilde gardait les livres, pas les grimoires maléfiques. -1 point."
 },
 
 
